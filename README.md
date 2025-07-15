@@ -1,42 +1,45 @@
-# 🧠 Beyond_Chats — Reddit User Persona Generator (LLM-Powered)
+# Beyond_Chats — Reddit User Persona Generator (LLM-Powered)
 
-**Beyond_Chats** is an intelligent command-line tool that takes a Reddit user’s profile URL and generates a psychologically-informed **user persona** based on their public posts and comments.  
-The result is a readable text file that includes:
+**Beyond_Chats** is an intelligent command-line tool that takes a Reddit user’s profile URL and generates a psychologically-informed **user persona** based on their public posts and comments.
+
+The output is a clean `.txt` file that includes:
 - Personality traits  
 - Topic interests  
 - Writing style  
-- Cited quotes  
-- A generated summary — all backed by real content  
+- Cited quotes from their content  
+- A generated summary paragraph  
 
-It uses a lightweight **LLM (like Phi)** running **locally via Ollama**, with zero cloud dependency or rate limits.
-
----
-
-## 🔍 What It Does
-
-Reddit URL → Scrape Posts + Comments → Clean & Chunk → Send to LLM → Generate Full Persona Block → Save to .txt
-
-For each Reddit profile:
-- Scrapes latest 100 posts and 200 comments
-- Cleans & breaks text into chunks
-- Sends each chunk to a local model via Ollama
-- Generates a detailed user persona for each chunk:
-  - ✅ 2 personality traits
-  - ✅ Writing style
-  - ✅ Topic interests
-  - ✅ Quote examples
-  - ✅ Paragraph summary
-- Saves output to `examples/<username>_persona.txt`
+Powered by a lightweight local LLM (like `phi`) running via **Ollama**, this tool works offline — with no cloud dependencies or rate limits.
 
 ---
 
-## 🧠 Example Use Case
+## What It Does
 
-> Input:
+Reddit URL ➝ Scrape Posts & Comments ➝ Clean & Chunk ➝ Send to LLM ➝ Generate Persona ➝ Save to .txt
+
+For each Reddit user:
+- Scrapes their latest **100 posts** and **200 comments**
+- Cleans and chunks the text using `nltk`
+- Sends each chunk to a local LLM using **Ollama**
+- Generates a structured persona per chunk:
+  - 2 personality traits
+  - Writing style
+  - Topic interests
+  - 2 quotes
+  - Summary paragraph
+- Saves everything in `examples/<username>_persona.txt`
+
+---
+
+## Example Use Case
+
+### Command:
 ```bash
 python main.py --url https://www.reddit.com/user/kojied/ --limit 2
-📂 Output:
-File: examples/kojied_persona.txt
+Output File:
+examples/kojied_persona.txt
+
+Sample Output:
 
 --- Persona Block 1 ---
 Username: u/kojied
@@ -56,51 +59,51 @@ Quotes:
 - "Monero is the only true private currency."
 
 Generated Summary:
-u/kojied frequently contributes to discussions around crypto and privacy. Their tone is sharp, independent, and opinionated — reflecting a mindset that values control and freedom through technology.
-
+u/kojied frequently contributes to discussions around crypto and privacy.
+Their tone is sharp, independent, and opinionated — reflecting a mindset
+that values control and freedom through technology.
 Setup Instructions
 1. Clone the Project
 git clone https://github.com/yourusername/Beyond_Chats.git
 cd Beyond_Chats
-2. Install Python Dependencies
 
+2. Install Python Dependencies
 pip install -r requirements.txt
 python -m nltk.downloader punkt
-3. Configure Reddit API Access
-Go to https://www.reddit.com/prefs/apps
 
-Create a new app → script
+3. Configure Reddit API Credentials
+Visit: https://www.reddit.com/prefs/apps
 
-Add a .env file in the root directory:
+Create a new app → choose script
+
+Create a .env file in the root directory:
 
 REDDIT_CLIENT_ID=your_reddit_app_id
 REDDIT_CLIENT_SECRET=your_reddit_secret
 REDDIT_USER_AGENT=BeyondChatsUserAgent
 
-4. Install & Run Ollama
-If not installed:
+4. Install & Run Ollama (for Local LLM)
+If you don't have Ollama:
 
 brew install ollama
-Then pull the model and serve:
+Then pull and start the model:
 
 ollama pull phi
 ollama serve
-✅ Ollama will host a local LLM server at http://localhost:11434.
+This runs a local LLM server at:
 
-▶️ Running the Script
+http://localhost:11434
+Running the Tool
 
 python main.py --url https://www.reddit.com/user/GallowBoob/ --limit 3
-
 --url : Reddit profile URL
 
---limit : (Optional) number of text chunks to process (useful for testing)
+--limit : (optional) number of content chunks to process
 
-The full persona will be saved to:
-
+Output saved to:
 
 examples/GallowBoob_persona.txt
-
-Folder Structure
+Project Structure
 bash
 Copy
 Edit
@@ -108,49 +111,49 @@ Beyond_Chats/
 ├── main.py
 ├── .env
 ├── requirements.txt
-├── examples/
+├── examples/                 # Output persona files
 └── persona_builder/
-    ├── scraper.py        # Scrapes posts/comments
-    ├── utils.py          # Cleans + chunks text
-    ├── llm_persona.py    # Persona generation via Ollama
-    └── formatter.py      # Formats and saves output
-
-Model Customization (Advanced)
-You can swap phi with mistral or another local model in llm_persona.py:
+    ├── scraper.py           # Reddit scraping logic
+    ├── utils.py             # Text cleaning and chunking
+    ├── llm_persona.py       # Persona generation using Ollama
+    └── formatter.py         # Output formatting and saving
+Model Customization
+In llm_persona.py, you can switch models:
 
 OLLAMA_MODEL = "mistral"
-Just make sure to:
+Then run:
 
 ollama pull mistral
-Tested Reddit Profiles
-Try out these real users:
+Test With These Reddit Profiles
 
 https://www.reddit.com/user/GallowBoob/
 https://www.reddit.com/user/Unidan/
 https://www.reddit.com/user/spez/
 https://www.reddit.com/user/BernieSandersFan/
 https://www.reddit.com/user/Hungry-Move-6603/
+Error Handling
+Scenario	What Happens
+No posts/comments	[INFO] No data found for user
+Ollama not running	[ERROR] Connection refused
+Model not pulled yet	Run ollama pull phi again
+Invalid Reddit URL	[ERROR] Invalid Reddit URL format
 
-🧩 Error Handling
-If Reddit user has no content → you'll see: No data found for user
-If Ollama is not running → you'll see: Connection refused
-If model is missing → run: ollama pull phi again
+Highlights
+Private and offline (no tokens, no API rate limits)
 
-📌 Highlights
-No external API costs or limits
+Powered by local LLMs via Ollama
 
-Private and offline
+Human-readable, psychology-style persona output
 
-Fully explainable: traits are cited with real quotes
-
-Modifiable for JSON, HTML, or web UI output
+Modular design — easy to extend (web, JSON, HTML, etc.)
 
 Author
 Aryan Mhalsank
-Built for a Generative AI Internship Assessment — focused on real-world AI tools, privacy, and LLM integration.
+Built for a Generative AI Internship Assessment
+With focus on: real-world NLP, local AI systems, and persona intelligence.
 
-Need a fast, private way to analyze a user's public online presence?
-Beyond_Chats is your plug-and-play solution.
+Want to understand someone’s mindset from just their Reddit profile?
+This tool lets you do that — quickly, privately, and intelligently.
 
 License
-MIT License — use freely, improve endlessly.
+MIT License — free to use, fork, remix, and improve.
